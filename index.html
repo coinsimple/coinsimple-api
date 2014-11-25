@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>CoinSimple JSON API by coinsimple</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>CoinSimple JSON API</h1>
+        <p>Information about the CoinSimple JSON API</p>
+
+        <p class="view"><a href="https://github.com/coinsimple/coinsimple-api">View the Project on GitHub <small>coinsimple/coinsimple-api</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/coinsimple/coinsimple-api/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/coinsimple/coinsimple-api/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/coinsimple/coinsimple-api">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="coinsimple-http-api" class="anchor" href="#coinsimple-http-api" aria-hidden="true"><span class="octicon octicon-link"></span></a>CoinSimple HTTP API</h1>
+
+<p>The CoinSimple API allows you to create invoices in your businesses through JSON requests. The Base URL for requests is: <code>https://app.coinsimple.com/api/v1/</code></p>
+
+<h2>
+<a id="authentication" class="anchor" href="#authentication" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authentication</h2>
+
+<p>Every business in CoinSimple has a unique <code>Business ID</code> and <code>API Key</code>. To create an authenticated request you have to send the Business's ID under the key <code>business_id</code>, and the SHA256 hash of the API Key along with the current timestamp.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="pl-c"># API credentials</span>
+<span class="pl-vo">API_KEY</span>     <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>2ee7c9d2d5bcde0a8b0ad45956c4332904f7b940<span class="pl-pds">"</span></span>
+<span class="pl-vo">BUSINESS_ID</span> <span class="pl-k">=</span> <span class="pl-c1">44</span>
+<span class="pl-vo">TIMESTAMP</span>   <span class="pl-k">=</span> <span class="pl-c1">1416595468</span>
+
+<span class="pl-c"># SHA256_HMAC(TIMESTAMP, API_KEY)</span>
+<span class="pl-vo">HASH</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>fd9ceac7abbe73d907c52332309d246269216f850130aa5fefdbcfe1b8ccd1b2<span class="pl-pds">"</span></span>
+
+<span class="pl-c"># REQUEST</span>
+{
+    <span class="pl-c1">business_id:</span> <span class="pl-c1">44</span>,
+    <span class="pl-c1">timestamp:</span> <span class="pl-c1">1416595468</span>,
+    <span class="pl-c1">hash:</span> <span class="pl-s1"><span class="pl-pds">"</span>fd9ceac7abbe73d907c52332309d246269216f850130aa5fefdbcfe1b8ccd1b2<span class="pl-pds">"</span></span>
+}</pre></div>
+
+<h2>
+<a id="creating-a-new-invoice" class="anchor" href="#creating-a-new-invoice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a new Invoice</h2>
+
+<p>To create a new invoice, you need to send a JSON POST request to: <code>/api/v1/invoice</code> with the following fields.</p>
+
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Required</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>Yes</td>
+<td>String</td>
+<td>Recipients Name</td>
+</tr>
+<tr>
+<td>email</td>
+<td>Yes</td>
+<td>String</td>
+<td>Recipients Email</td>
+</tr>
+<tr>
+<td>items</td>
+<td>Yes</td>
+<td>Array</td>
+<td>An array of items</td>
+</tr>
+<tr>
+<td>processor</td>
+<td>Yes *</td>
+<td>String</td>
+<td>The Processor or Wallet to handle the payment</td>
+</tr>
+<tr>
+<td>rate</td>
+<td>Yes *</td>
+<td>String</td>
+<td>The Service name to get the rate from</td>
+</tr>
+<tr>
+<td>currency</td>
+<td>Yes *</td>
+<td>String</td>
+<td>The Currency for the invoice</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>No</td>
+<td>String</td>
+<td>Terms or Notes</td>
+</tr>
+<tr>
+<td>invoice_type</td>
+<td>No</td>
+<td>String</td>
+<td>The invoice's type (<code>regular</code>, <code>days</code>, <code>date</code>)</td>
+</tr>
+<tr>
+<td>interval</td>
+<td>No</td>
+<td>Integer</td>
+<td>The interval for recurring invoices</td>
+</tr>
+<tr>
+<td>recurring_times</td>
+<td>No</td>
+<td>Integer</td>
+<td>The number of times to recur an invoice</td>
+</tr>
+<tr>
+<td>percent</td>
+<td>No</td>
+<td>Float</td>
+<td>An integer representing a percent discount</td>
+</tr>
+<tr>
+<td>custom</td>
+<td>No</td>
+<td>String / Hash</td>
+<td>Any cusom data which gets sent in the callback</td>
+</tr>
+<tr>
+<td>callback_url</td>
+<td>No</td>
+<td>String</td>
+<td>A URL to send a notification on payment</td>
+</tr>
+<tr>
+<td>redirect_url</td>
+<td>No</td>
+<td>String</td>
+<td>A URL to redirect the user to after payment</td>
+</tr>
+</tbody>
+</table>
+
+<p>Processor, Rate and Currency can be left out if you set the defaults in the Business's settings page.</p>
+
+<p>Each item in the <code>items</code> array needs to contain three fields:</p>
+
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description</td>
+<td>String</td>
+<td>The items description</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>Integer</td>
+<td>The number of items</td>
+</tr>
+<tr>
+<td>price</td>
+<td>Float</td>
+<td>The unit price</td>
+</tr>
+</tbody>
+</table>
+
+<h4>
+<a id="recurring-invoices" class="anchor" href="#recurring-invoices" aria-hidden="true"><span class="octicon octicon-link"></span></a>Recurring Invoices</h4>
+
+<p>To create a recurring invoice you need to set the <code>invoice_type</code> and <code>interval</code> fields. The two types of recurring invoices are 'by date' or 'by interval of days'. If you want to create an invoice which will be billed on the sixth of every month you can set <code>invoice_type</code> to <code>"date"</code> and then set <code>interval</code> to <code>6</code>. On the other hand if you want an invoice to be sent every seven days you can set <code>invoice_type</code> to <code>days</code> and then set <code>interval</code> to <code>7</code>.</p>
+
+<p>By default invoices will recur forever, but if you want it to only recur a certain number of times you can set <code>recurring_times</code> to the number of times after this invoice to recur.</p>
+
+<h3>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h3>
+
+<p>A full JSON request body could look something like the following:</p>
+
+<div class="highlight highlight-json"><pre>{
+    <span class="pl-s1"><span class="pl-pds">"</span>business_id<span class="pl-pds">"</span></span>: <span class="pl-c1">44</span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span>: <span class="pl-c1">1416595468</span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>hash<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>fd9ceac7abbe73d907c52332309d246269216f850130aa5fefdbcfe1b8ccd1b2<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>Coin Simple<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>hi@coinsimple.com  <span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>items<span class="pl-pds">"</span></span>: [
+                { <span class="pl-s1"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>blue shirt<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>price<span class="pl-pds">"</span></span>: <span class="pl-c1">15.80</span>, <span class="pl-s1"><span class="pl-pds">"</span>quantity<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span> },
+                { <span class="pl-s1"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>nice hat<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>price<span class="pl-pds">"</span></span>: <span class="pl-c1">12</span>, <span class="pl-s1"><span class="pl-pds">"</span>quantity<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span> },
+    ],
+    <span class="pl-s1"><span class="pl-pds">"</span>processor<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>armory<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>rate<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>coinbase<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>currency<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>usd<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>notes<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>Will be gift wrapped :)<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>invoice_type<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>regular<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>percent<span class="pl-pds">"</span></span>:  <span class="pl-c1">10</span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>custom<span class="pl-pds">"</span></span>: { <span class="pl-s1"><span class="pl-pds">"</span>customer_id<span class="pl-pds">"</span></span>: <span class="pl-c1">34</span>, <span class="pl-s1"><span class="pl-pds">"</span>order_number<span class="pl-pds">"</span></span>: <span class="pl-c1">12</span> },
+    <span class="pl-s1"><span class="pl-pds">"</span>callback_url<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>https://example.com/process_callback<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>redirect_url<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>https://example.com/thanks_for_buying<span class="pl-pds">"</span></span>
+}
+</pre></div>
+
+<p>The corresponding HTTP request would be something like:</p>
+
+<pre lang="http"><code>POST /api/v1/invoice HTTP/1.1
+Host: app.coinsimple.com
+Content-Type: application/json
+Cache-Control: no-cache
+
+{ "business_id": 44, "timestamp": 1416595468, "hash": "fd9ceac7abbe73d907c52332309d246269216f850130aa5fefdbcfe1b8ccd1b2", "name": "Coin Simple", "email": "hi@coinsimple.com  ", "items": [ { "description": "blue shirt", "price": 15.80, "quantity": 2 }, { "description": "nice hat", "price": 12, "quantity": 1 }, ], "processor": "armory", "rate": "coinbase", "currency": "usd", "notes": "Will be gift wrapped :)", "invoice_type": "regular", "percent": 10, "custom": { "customer_id": 34, "order_number": 12 }, "callback_url": "https://example.com/process_callback", "redirect_url": "https://example.com/thanks_for_buying" }
+</code></pre>
+
+<h3>
+<a id="callbacks" class="anchor" href="#callbacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Callbacks</h3>
+
+<p>If you set up a callback url when creating an invoice, then that address will be posted with a notification once the invoice is paid. The notification for the example above would look something like this:</p>
+
+<div class="highlight highlight-json"><pre>{
+    <span class="pl-s1"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>paid<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>custom<span class="pl-pds">"</span></span>: { <span class="pl-s1"><span class="pl-pds">"</span>customer_id<span class="pl-pds">"</span></span>: <span class="pl-c1">34</span>, <span class="pl-s1"><span class="pl-pds">"</span>order_number<span class="pl-pds">"</span></span>: <span class="pl-c1">12</span> },
+    <span class="pl-s1"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span>: <span class="pl-c1">1416600035</span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>hash<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>e03bcda1016075d13052a2081b80a6a2cc1b54bf7c4276ed806addc624c67620<span class="pl-pds">"</span></span>
+}</pre></div>
+
+<p>The hash that is sent along in the notification is generated in the same way that authentication hash is created, except here the timestamp is the time when the notification was sent. To verify it's authenticity you can hash your API key with the given timestamp and see if it matches up. You can also add custom validations by passing something through the <code>custom</code> parameter, and of course combining these is even better.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/coinsimple">coinsimple</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
